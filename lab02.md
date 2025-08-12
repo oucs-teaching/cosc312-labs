@@ -8,17 +8,21 @@ tags: [cosc312, lab]
 
 A brief demonstration was given of Kerberos effecting access to an SSH server during lectures. The PDF lecture notes indicate how to run the COSC412 (and COSC312) demonstration virtual machine (VM) to access a standardised software environment.
 
-One objective of the lab this week is to ensure that everyone in the class is comfortable with the use of the VM tools used to reproduce demonstrations discussed in lectures. Depending on which papers you have completed, you may already be entirely comfortoable with these tools.
+One objective of the lab this week is to ensure that everyone in the class is comfortable with the use of the VM tools used to reproduce demonstrations discussed in lectures. Depending on which papers you have completed, you may already be entirely comfortable with these tools.
 
 ## Working on your own computer
 
-I'm keen to support use of the COSC312 VM on your own computers as well as the computers in the CS Labs. The COSC312 VMs should be usable on Windows, macOS (Intel CPUs) and Linux. You would need to install VirtualBox and Vagrant, both of which are available across the aforementioned operating systems.
+I'm keen to support use of the COSC312 VM on your own computers as well as the computers in the Owheo Building Labs. The COSC312 VMs should be usable on Windows, macOS, and Linux. You would need to install VirtualBox and Vagrant, both of which are available across the aforementioned operating systems.
 
 ### Apple Macs with Arm CPUs
 
-A challenge at the moment is that Apple computers with Arm CPUs (e.g., M1, M2, M3, etc.): these computers do not presently have production support from VirtualBox, and thus Vagrant cannot work either, if it is relying on virtualisation from VirtualBox.
+A passing challenge was that Apple computers with Arm CPUs (e.g., M1, M2, M3, etc.) did not have production support from VirtualBox, and thus Vagrant couldn't work with them either, when relying on virtualisation from VirtualBox. VirtualBox has since added support for Arm-based Macs, and recent Vagrant versions work fine too.
 
-What I've done is to create a Docker equivalent version of the Vagrant functionality that relied on VirtualBox. Rather than installing VirtualBox on your Mac, you need to install Docker Desktop. Vagrant can use Docker Desktop to provide virtualisation instead of VirtualBox. It's not the same form of virtual machine being created, but for COSC312 / COSC412 use it should hopefully work equivalently through Vagrant.
+The Docker approach below should still work on both Arm and Intel CPUs, but is not likely to be necessary anymore, so you can skip the "Using Docker instead of VirtualBox" section that follows...
+
+#### Using Docker instead of VirtualBox
+
+I created a Docker equivalent version of the Vagrant functionality that had relied on VirtualBox. Rather than installing VirtualBox on your Mac, you need to install Docker Desktop. Vagrant can use Docker Desktop to provide virtualisation instead of VirtualBox. It's not the same form of virtual machine being created, but for COSC312 / COSC412 use it should hopefully work equivalently through Vagrant.
 
 After you clone the Git repository change to the `docker` branch, e.g., with a command such as:
 
@@ -28,12 +32,12 @@ git checkout docker
 
 After that the commands such as `vagrant up` should "just work". You can start up the Docker Desktop GUI if you want to see what Vagrant is doing behind the scenes.
 
-## Working in the CS Labs
+## Working in the Owheo Building Labs
 
-When working in the CS Lab environment, on Windows I typically use the Git Bash shell, since I more often use Unix-y shells than Windows ones. That said, I would be keen to include instructions for PowerShell and `cmd.exe` where it is straightforward to do so.
+When working in the Owheo Building Lab environment, on Windows I typically use the Git Bash shell, since I more often use Unix-y shells than Windows ones. That said, I would be keen to include instructions for PowerShell and `cmd.exe` where it is straightforward to do so.
 
 :::warning
-:bomb: Something seems to be wrong with the CS Lab computers when they first start VMs. However this work-around should hopefully unstick whatever the problem is until the sysadmins fix it properly.
+:bomb: Something seems to be wrong with the Owheo Building Lab computers when they first start VMs. However this work-around should hopefully unstick whatever the problem is until the sysadmins fix it properly.
 
 When you first try to run `vagrant up` the VM that Vagrant starts in VirtualBox seems to get jammed during startup. I recommend that you:
 - start the VirtualBox application
@@ -41,7 +45,7 @@ When you first try to run `vagrant up` the VM that Vagrant starts in VirtualBox 
 - return to your terminal window and run the command `vagrant reload`, which will cause Vagrant to notice that it can't SSH to the VM, force it to shut off, and then restart it and configure it properly the second time.
 :::
 
-In the CS Lab environment I have reported some general issues with network speed, and know that the sysadmins are working to improve how the CS Lab environment works in terms of your user experience (particularly when moving between different physical lab computers). This seems to be year-by-year ongoing work...
+In the Owheo Building Lab environment I have reported some general issues with network speed, and know that the sysadmins are working to improve how the Owheo Building Lab environment works in terms of your user experience (particularly when moving between different physical lab computers). This seems to be year-by-year ongoing work...
 
 ## Suggested lab exercises
 
@@ -53,7 +57,7 @@ In the CS Lab environment I have reported some general issues with network speed
 
 :::success
 :pencil2: 
-**Task One** (recommended) Confirm that you can produce the same results as presented in the lecture notes on  the CS Lab computer in front of you and/or on your own laptop.
+**Task One** (recommended) Confirm that you can produce the same results as presented in the lecture notes on  the Owheo Building Lab computer in front of you and/or on your own laptop.
 :::
 
 Now that you are sure that you can reproduce the steps demonstrated in the lecture, you should link the demonstration steps with the Kerberos theory.
@@ -70,7 +74,7 @@ The idea of renewable tickets was discussed in the week 5 lecture. The aim of th
 **Task Three** (optional) Reconfigure the ticket lifetimes to allow them to be renewable, but to have very short (but usable) ticket expiry. Explore the example of accessing the SSH server in the above demo, either allowing your service ticket to expire or not. Do you detect differences in behaviour from Kerberos? What can you determine from (repeatedly) running the `klist` command?
 :::
 
-Cross-realm authentication is included in the lecture notes but was not discussed in lectures: see whether you are able to configure and demonstrate cross-realm authentication working.
+Cross-realm authentication was discussed briefly in lectures: see whether you are able to configure and demonstrate cross-realm authentication working.
 
 :::success
 :pencil2: 
@@ -79,11 +83,11 @@ Cross-realm authentication is included in the lecture notes but was not discusse
 
 A brief demonstration was given of Kerberos effecting access to an SSH server during lectures. The PDF lecture notes indicate how to run the COSC412 (and COSC312) demonstration virtual machine (VM) to access a standardised software environment.
 
-One objective of the lab this week is to ensure that everyone in the class is comfortable with the use of the VM tools used to reproduce demonstrations discussed in lectures. Depending on which papers you have completed, you may already be entirely comfortoable with these tools.
+One objective of the lab this week is to ensure that everyone in the class is comfortable with the use of the VM tools used to reproduce demonstrations discussed in lectures. Depending on which papers you have completed, you may already be entirely comfortable with these tools.
 
 ## Working on your own computer
 
-I'm keen to support use of the COSC312 VM on your own computers as well as the computers in the CS Labs. The COSC312 VMs should be usable on Windows, macOS (Intel CPUs) and Linux. You would need to install VirtualBox and Vagrant, both of which are available across the aforementioned operating systems.
+I'm keen to support use of the COSC312 VM on your own computers as well as the computers in the CS Labs. The COSC312 VMs should be usable on Windows, macOS (Intel C and Linux. You would need to install VirtualBox and Vagrant, both of which are available across the aforementioned operating systems.
 
 ### Apple Macs with Arm CPUs
 
