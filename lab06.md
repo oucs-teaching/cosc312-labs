@@ -1,17 +1,19 @@
-# COSC312 Lab 06—More Ethereum blockchain
+# COSC312 Lab week 9—More Ethereum blockchain
 
-Since the lecture this week continued on the theme of blockchain and Ethereum, this week's labe does so too.
+Since the lecture this week continued on the theme of blockchain and Ethereum, this week's lab does so too.
 
 The objective for this lab is:
 - for you to continue experimenting with the Ethereum blockchain operating on a safe, isolated and private network.
 
-## Ethereum 2.0 and proof of stake consensus
+:::info
+:bulb: **Ethereum 2.0 and proof of stake consensus**
 
-I am also working to see if I can get an example of the Ethereum 2.0 proof of stake mining working on a local test network in the same way as the Ethereum 1.0 proof of work infrastructure that we have explored in COSC312 labs, but this is not yet working smoothly: running a local proof-of-stake network does indeed involve bootstrapping using a period of proof-of-work. This means that multiple sets of tools need to be locked to previous versions that build successfully. However, since the Ethereum "merge" has happened, many of the software repositories previously investigating the Ethereum proof of stake software testing have bit-rotted into oblivion.
+It would be good to be able to explore the proof of stake system that Ethereum uses, however this is not entirely straightforward, since the scheme is bootstrapped by a proof of work phase. Since the Ethereum "merge" has happened, that brought Ethereum to proof of stake, many of the software repositories previously investigating the Ethereum proof of stake software testing have bit-rotted into oblivion, and cannot easily be brought back for your enjoyment.
+:::
 
 ## Setting up your Ethereum environment
 
-Follow the directions (and warnings) from the lab 5 up to the point of the exercises, but ensure that you add the `      --allow-insecure-unlock` option into the list of options for the `eth-node-1` node's `command:` within the `docker-compose.yml`.
+Follow the directions (and warnings) from the previous lab up to the point of the exercises, but ensure that you add the `--allow-insecure-unlock` option into the list of options for the `eth-node-1` node's `command:` within the `docker-compose.yml`.
 
 ## Wallet controls
 
@@ -42,7 +44,7 @@ In some contexts the sender's key needs to be imported. With a call such as:
 ```javascript
 personal.importRawKey("<sender-private-key>", "<password>")
 ```
-.. which will return the public address as a hexadecimal string.
+... which will return the public address as a hexadecimal string.
 
 However, since our first node created the keys we're using, I've found that I can directly proceed to the next step, using the sender public addresses seen in the output of the function to print the account balances.
 
@@ -78,7 +80,7 @@ personal.lockAccount("<sender-public-address>")
 
 :::success
 :pencil:
-**Task** (recommended) Transfer funds from an account that you are able to unlock, and confirm that the balance of both affected accounts changes as exepcted. Note how long it takes before the transaction is committed.
+**Task** (recommended) Transfer funds from an account that you are able to unlock, and confirm that the balance of both affected accounts changes as expected. Note how long it takes before the transaction is committed.
 :::
 
 :::success
@@ -99,5 +101,5 @@ personal.lockAccount("<sender-public-address>")
 ## Cleaning up
 
 :::warning
-:warning: Remember that the `/eth-data` created by running your ethereum test will remain even after the containers are shut down. So after doing `docker-compose down` to shut down the containers, you additionally want to `rm` the directories `eth-node-1`, `eth-node-2` and `eth-node-3`
+:warning: Remember that the `/eth-data` created by running your Ethereum test will remain even after the containers are shut down. So after doing `docker-compose down` to shut down the containers, you additionally want to `rm` the directories `eth-node-1`, `eth-node-2` and `eth-node-3`
 :::
