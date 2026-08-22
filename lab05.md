@@ -1,25 +1,15 @@
 ---
-title: COSC312 Lab week 8—Ethereum blockchain
+title: COSC312 Lab week 7—Ethereum blockchain
 tags: [cosc312, lab]
 
 ---
 
-# COSC312 Lab week 8—Ethereum blockchain
+# COSC312 Lab week 7—Ethereum blockchain
 
 The objective for this lab is:
 - for you to experiment with the Ethereum blockchain operating on a safe, isolated and private network.
 
 ## Setting up your Ethereum environment
-
-:::danger
-:bomb: The Windows environment in the Owheo Building Labs breaks Docker's ability to share files and folders between containers (lightweight virtual machines) and parts of the host system, such as your home directory (this looks set to be fixed by changes ITS are making in 2026, but that doesn't help us now). You can work around the problem in this lab by doing the exercises within your home directory on the `C:` drive (or even the `C:\Windows\temp` directory) instead of your home directory on any of the other drive letters, since they're probably network drives (e.g., the `J:` drive).
-
-This lab does not require you to keep any files for the future, but do remember that if you want to keep any files, you will likely need to copy them back from temporary locations to persistent storage such as your default home directory.
-:::
-
-:::warning
-:warning: Starting up Docker Desktop on the Owheo Building Lab computers is a bit of a strange experience. For the steps that worked for me, have a look at just the [Using the Docker Desktop application](https://hackmd.io/BrkRNRX5RomHMSsvq82Aaw#Using-the-Docker-Desktop-application) section in the COSC349 labs. (I'm linking to that rather than copying the material here so that if I need to change the description, I don't end up with inconsistent instructions on different lab exercise pages.,)
-:::
 
 These instructions assume that you have Docker up and running. If you are using Mac or Windows, it is recommended that you explore the Docker Desktop GUI as it is a convenient way to see the activity logs of your Ethereum nodes, and to control all of the Docker resources being used.
 
@@ -28,7 +18,7 @@ Clone the code repository https://altitude.otago.ac.nz/cosc412/ethereum-testing 
 Briefly examine the `genesis.json` file. It provides initial configuration of our blockchain.
 
 Initialise the three Ethereum nodes using:
-```
+```shell
 docker-compose run --entrypoint "geth --datadir /eth-data init /genesis.json" eth-node-1
 docker-compose run --entrypoint "geth --datadir /eth-data init /genesis.json" eth-node-2
 docker-compose run --entrypoint "geth --datadir /eth-data init /genesis.json" eth-node-3
@@ -40,16 +30,16 @@ After doing so, for me `eth-node-1` remains running, but the other containers ex
 
 Let's create two wallet accounts that are managed by `eth-node-1`, and then set those accounts to be the target of mining operations.
 
-```
+```shell
 docker-compose run --entrypoint "geth --datadir /eth-data account new" eth-node-1
 ```
 
-You will need to enter a password when prompted. Note the public key "address" that is shown. For me this was `0xBf1B07d6F1759fA380F07BCd015D04e306731640` for the first account and `0x998BD36254bBB2345d3aD5Fe1527804B9bEDC6AD` for the second.
+You will need to enter a password when prompted. Note the public key "address" that is shown. For me this was `0x81668D47714B9c1704f6FA28608f1322E188726F` for the first account and `0xBBA758f6B40B09dC18D5124614f6A03a127CA204` for the second.
 
 Edit the `docker-compose.yml` file's `eth-node-1` section. Delete the line above the `--mine` directive, uncomment the `--mine` and `--miner` lines, and paste the first public key address as the `etherbase`. This public key address will get "paid" the mining rewards.
 
 Now let's shut down `eth-node-1` and start it again, using:
-```
+```shell
 docker-compose down eth-node-1
 docker-compose up eth-node-1 -d
 ```
@@ -58,7 +48,7 @@ Use the Docker Desktop GUI to watch the logs for your running `eth-node-1`. You 
 
 Let's check the account balance of all accounts managed by `eth-node-1`. Connect to that node's `geth` console using:
 
-```
+```shell
 docker-compose exec -it eth-node-1 geth attach ipc://eth-data/geth.ipc
 ```
 
@@ -66,7 +56,7 @@ You should be greated with a `>` prompt, which is expecting JavaScript. Type `ex
 
 To list the balance of all accounts managed by this node, converted to ether units for readability, paste in the function:
 
-```
+```javascript
 eth.accounts.forEach(function(account) {
   console.log(account + ": " + web3.fromWei(eth.getBalance(account), "ether") + " ETH");
 });
@@ -76,38 +66,41 @@ While typing up these instructions, my first account has been accumulating many 
 
 Now, modify your `docker-compose.yml` to change your `eth-node-2` section to uncomment the mining options as for `eth-node-1`, but use the second public key as the target for mining rewards.
 
-Start up both `eth-node-2` and `eth-node-3` by invoking `docker-compose up -d`
+Start up both `eth-node-2` and `eth-node-3` by invoking:
+```shell
+docker-compose up -d
+```
 
 Using the Docker Desktop GUI, examine the logs of `eth-node-2` and `eth-node-3`.
 
 Node three should not actually be doing anything. It is not yet linked into the ethereum network. Node two will be starting to do its own mining, but is not linked into the network either.
 
 Find the enode of the first node by using:
-```
+```shell
 docker-compose exec -it eth-node-1 geth --exec "admin.nodeInfo.enode" attach ipc://eth-data/geth.ipc
 ```
 
 You should be shown a result such as:
 ```
-"enode://8710195eb5c1696e0d76931ef28c8dabf9bda27598e08b270edbf2b6e9fa1a2107bff0a21f5c08674e83edd8ad41a434d3b306fd86004a02ec1df7cafb5c32c0@127.0.0.1:30303?discport=0"
+"enode://feceaee805647383cbbf7237531e189f63529e672e020ba2ee4f0fb900246acfb3c95696994ddb5aa0669e4cd02f1a4ef2a705ff86a75ff7324603906690ecb7@127.0.0.1:30303?discport=0"
 ```
 
-You need to replace the `127.0.0.1` part with the IP address of `eth-node-1`, which can be found by running `ip addr` in the "Terminal" tab that Docker Desktop provides for your eth-node-1 and looking for the address that starts `172.19.0`. It is very likely that the replacement is `172.19.0.2`.
+You need to replace the `127.0.0.1` part with the IP address of `eth-node-1`, which can be found by running `ip addr` in the "Terminal" tab that Docker Desktop provides for your `eth-node-1` and looking for the address that starts `172.18.0`. This is usually the final address listed, and it is possible that the replacement is `172.18.0.2`, specifically.
 
 You can now communicate that to your other nodes, but you will need to change the address to be correct for your context:
 
-```
-docker-compose exec -it eth-node-2 geth --exec "admin.addPeer('enode://8710195eb5c1696e0d76931ef28c8dabf9bda27598e08b270edbf2b6e9fa1a2107bff0a21f5c08674e83edd8ad41a434d3b306fd86004a02ec1df7cafb5c32c0@172.19.0.2:30303?discport=0')" attach ipc://eth-data/geth.ipc
-docker-compose exec -it eth-node-3 geth --exec "admin.addPeer('enode://8710195eb5c1696e0d76931ef28c8dabf9bda27598e08b270edbf2b6e9fa1a2107bff0a21f5c08674e83edd8ad41a434d3b306fd86004a02ec1df7cafb5c32c0@172.19.0.2:30303?discport=0')" attach ipc://eth-data/geth.ipc
+```shell
+docker-compose exec -it eth-node-2 geth --exec "admin.addPeer('enode://feceaee805647383cbbf7237531e189f63529e672e020ba2ee4f0fb900246acfb3c95696994ddb5aa0669e4cd02f1a4ef2a705ff86a75ff7324603906690ecb7@172.18.0.2:30303?discport=0')" attach ipc://eth-data/geth.ipc
+docker-compose exec -it eth-node-3 geth --exec "admin.addPeer('enode://feceaee805647383cbbf7237531e189f63529e672e020ba2ee4f0fb900246acfb3c95696994ddb5aa0669e4cd02f1a4ef2a705ff86a75ff7324603906690ecb7@172.18.0.2:30303?discport=0')" attach ipc://eth-data/geth.ipc
 ```
 
-See what happens in the logs. In my case `eth-node-2` noted (complete with scream emoji) that a number of blocks had been lost. That's because the node became aware of `eth-node-1`'s far longer fork, and switched over to it.
+See what happens in the logs. In my case `eth-node-2` noted (complete with a scream emoji) that a number of blocks had been lost. That's because the node became aware of `eth-node-1`'s far longer fork, and switched over to it.
 
 Meanwhile node three will be seen to be importing lots of blockchain data, but isn't set to do mining, so won't be showing any mining activity of its own.
 
-You can check whether the added peer nodes have taken effect by asking a node what its `peerCount` is, with a command such as:
+You can check whether the added peer nodes have taken effect by asking a node what its `peerCount` is, with a command such as the one that follows. Note that the `peerCount` won't count `eth-node-1` itself, so expect a result of `2` if both `eth-node-2` and `eth-node-3` have successfully associated.
 
-```
+```shell
 docker-compose exec -it eth-node-1 geth --exec "net.peerCount" attach ipc://eth-data/geth.ipc
 ```
 
@@ -133,22 +126,12 @@ docker-compose exec -it eth-node-1 geth --exec "net.peerCount" attach ipc://eth-
 :::warning
 :warning: Remember that the `/eth-data` created by running your ethereum test will remain even after the containers are shut down. So after doing `docker-compose down` to shut down the containers, you additionally want to `rm` the directories `eth-node-1`, `eth-node-2` and `eth-node-3`
 :::
-# COSC312 Lab week 8—Ethereum blockchain
+# COSC312 Lab week 7—Ethereum blockchain
 
 The objective for this lab is:
 - for you to experiment with the Ethereum blockchain operating on a safe, isolated and private network.
 
 ## Setting up your Ethereum environment
-
-:::danger
-:bomb: The Windows environment in the Owheo Building Labs breaks Docker's ability to share files and folders between containers (lightweight virtual machines) and parts of the host system, such as your home directory (this looks set to be fixed by changes ITS are making in 2026, but that doesn't help us now). You can work around the problem in this lab by doing the exercises within your home directory on the `C:` drive (or even the `C:\Windows\temp` directory) instead of your home directory on any of the other drive letters, since they're probably network drives (e.g., the `J:` drive).
-
-This lab does not require you to keep any files for the future, but do remember that if you want to keep any files, you will likely need to copy them back from temporary locations to persistent storage such as your default home directory.
-:::
-
-:::warning
-:warning: Starting up Docker Desktop on the Owheo Building Lab computers is a bit of a strange experience. For the steps that worked for me, have a look at just the [Using the Docker Desktop application](https://hackmd.io/BrkRNRX5RomHMSsvq82Aaw#Using-the-Docker-Desktop-application) section in the COSC349 labs. (I'm linking to that rather than copying the material here so that if I need to change the description, I don't end up with inconsistent instructions on different lab exercise pages.,)
-:::
 
 These instructions assume that you have Docker up and running. If you are using Mac or Windows, it is recommended that you explore the Docker Desktop GUI as it is a convenient way to see the activity logs of your Ethereum nodes, and to control all of the Docker resources being used.
 
@@ -157,7 +140,7 @@ Clone the code repository https://altitude.otago.ac.nz/cosc412/ethereum-testing 
 Briefly examine the `genesis.json` file. It provides initial configuration of our blockchain.
 
 Initialise the three Ethereum nodes using:
-```
+```shell
 docker-compose run --entrypoint "geth --datadir /eth-data init /genesis.json" eth-node-1
 docker-compose run --entrypoint "geth --datadir /eth-data init /genesis.json" eth-node-2
 docker-compose run --entrypoint "geth --datadir /eth-data init /genesis.json" eth-node-3
@@ -169,16 +152,16 @@ After doing so, for me `eth-node-1` remains running, but the other containers ex
 
 Let's create two wallet accounts that are managed by `eth-node-1`, and then set those accounts to be the target of mining operations.
 
-```
+```shell
 docker-compose run --entrypoint "geth --datadir /eth-data account new" eth-node-1
 ```
 
-You will need to enter a password when prompted. Note the public key "address" that is shown. For me this was `0xBf1B07d6F1759fA380F07BCd015D04e306731640` for the first account and `0x998BD36254bBB2345d3aD5Fe1527804B9bEDC6AD` for the second.
+You will need to enter a password when prompted. Note the public key "address" that is shown. For me this was `0x81668D47714B9c1704f6FA28608f1322E188726F` for the first account and `0xBBA758f6B40B09dC18D5124614f6A03a127CA204` for the second.
 
 Edit the `docker-compose.yml` file's `eth-node-1` section. Delete the line above the `--mine` directive, uncomment the `--mine` and `--miner` lines, and paste the first public key address as the `etherbase`. This public key address will get "paid" the mining rewards.
 
 Now let's shut down `eth-node-1` and start it again, using:
-```
+```shell
 docker-compose down eth-node-1
 docker-compose up eth-node-1 -d
 ```
@@ -187,7 +170,7 @@ Use the Docker Desktop GUI to watch the logs for your running `eth-node-1`. You 
 
 Let's check the account balance of all accounts managed by `eth-node-1`. Connect to that node's `geth` console using:
 
-```
+```shell
 docker-compose exec -it eth-node-1 geth attach ipc://eth-data/geth.ipc
 ```
 
@@ -195,7 +178,7 @@ You should be greated with a `>` prompt, which is expecting JavaScript. Type `ex
 
 To list the balance of all accounts managed by this node, converted to ether units for readability, paste in the function:
 
-```
+```javascript
 eth.accounts.forEach(function(account) {
   console.log(account + ": " + web3.fromWei(eth.getBalance(account), "ether") + " ETH");
 });
@@ -205,38 +188,41 @@ While typing up these instructions, my first account has been accumulating many 
 
 Now, modify your `docker-compose.yml` to change your `eth-node-2` section to uncomment the mining options as for `eth-node-1`, but use the second public key as the target for mining rewards.
 
-Start up both `eth-node-2` and `eth-node-3` by invoking `docker-compose up -d`
+Start up both `eth-node-2` and `eth-node-3` by invoking:
+```shell
+docker-compose up -d
+```
 
 Using the Docker Desktop GUI, examine the logs of `eth-node-2` and `eth-node-3`.
 
 Node three should not actually be doing anything. It is not yet linked into the ethereum network. Node two will be starting to do its own mining, but is not linked into the network either.
 
 Find the enode of the first node by using:
-```
+```shell
 docker-compose exec -it eth-node-1 geth --exec "admin.nodeInfo.enode" attach ipc://eth-data/geth.ipc
 ```
 
 You should be shown a result such as:
 ```
-"enode://8710195eb5c1696e0d76931ef28c8dabf9bda27598e08b270edbf2b6e9fa1a2107bff0a21f5c08674e83edd8ad41a434d3b306fd86004a02ec1df7cafb5c32c0@127.0.0.1:30303?discport=0"
+"enode://feceaee805647383cbbf7237531e189f63529e672e020ba2ee4f0fb900246acfb3c95696994ddb5aa0669e4cd02f1a4ef2a705ff86a75ff7324603906690ecb7@127.0.0.1:30303?discport=0"
 ```
 
-You need to replace the `127.0.0.1` part with the IP address of `eth-node-1`, which can be found by running `ip addr` in the "Terminal" tab that Docker Desktop provides for your eth-node-1 and looking for the address that starts `172.19.0`. It is very likely that the replacement is `172.19.0.2`.
+You need to replace the `127.0.0.1` part with the IP address of `eth-node-1`, which can be found by running `ip addr` in the "Terminal" tab that Docker Desktop provides for your `eth-node-1` and looking for the address that starts `172.18.0`. This is usually the final address listed, and it is possible that the replacement is `172.18.0.2`, specifically.
 
 You can now communicate that to your other nodes, but you will need to change the address to be correct for your context:
 
-```
-docker-compose exec -it eth-node-2 geth --exec "admin.addPeer('enode://8710195eb5c1696e0d76931ef28c8dabf9bda27598e08b270edbf2b6e9fa1a2107bff0a21f5c08674e83edd8ad41a434d3b306fd86004a02ec1df7cafb5c32c0@172.19.0.2:30303?discport=0')" attach ipc://eth-data/geth.ipc
-docker-compose exec -it eth-node-3 geth --exec "admin.addPeer('enode://8710195eb5c1696e0d76931ef28c8dabf9bda27598e08b270edbf2b6e9fa1a2107bff0a21f5c08674e83edd8ad41a434d3b306fd86004a02ec1df7cafb5c32c0@172.19.0.2:30303?discport=0')" attach ipc://eth-data/geth.ipc
+```shell
+docker-compose exec -it eth-node-2 geth --exec "admin.addPeer('enode://feceaee805647383cbbf7237531e189f63529e672e020ba2ee4f0fb900246acfb3c95696994ddb5aa0669e4cd02f1a4ef2a705ff86a75ff7324603906690ecb7@172.18.0.2:30303?discport=0')" attach ipc://eth-data/geth.ipc
+docker-compose exec -it eth-node-3 geth --exec "admin.addPeer('enode://feceaee805647383cbbf7237531e189f63529e672e020ba2ee4f0fb900246acfb3c95696994ddb5aa0669e4cd02f1a4ef2a705ff86a75ff7324603906690ecb7@172.18.0.2:30303?discport=0')" attach ipc://eth-data/geth.ipc
 ```
 
-See what happens in the logs. In my case `eth-node-2` noted (complete with scream emoji) that a number of blocks had been lost. That's because the node became aware of `eth-node-1`'s far longer fork, and switched over to it.
+See what happens in the logs. In my case `eth-node-2` noted (complete with a scream emoji) that a number of blocks had been lost. That's because the node became aware of `eth-node-1`'s far longer fork, and switched over to it.
 
 Meanwhile node three will be seen to be importing lots of blockchain data, but isn't set to do mining, so won't be showing any mining activity of its own.
 
-You can check whether the added peer nodes have taken effect by asking a node what its `peerCount` is, with a command such as:
+You can check whether the added peer nodes have taken effect by asking a node what its `peerCount` is, with a command such as the one that follows. Note that the `peerCount` won't count `eth-node-1` itself, so expect a result of `2` if both `eth-node-2` and `eth-node-3` have successfully associated.
 
-```
+```shell
 docker-compose exec -it eth-node-1 geth --exec "net.peerCount" attach ipc://eth-data/geth.ipc
 ```
 
